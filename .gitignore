@@ -1,0 +1,19 @@
+# 비밀키 — 절대 커밋 금지
+*.pem
+*.key
+*.ppk
+*.p12
+*.pfx
+id_rsa*
+
+# 자격증명
+.env
+.env.*
+credentials
+*credentials*
+aws_credentials
+
+# 원본 작업 폴더에만 두는 것
+*.pptx
+*.pdf
+*.drawio
