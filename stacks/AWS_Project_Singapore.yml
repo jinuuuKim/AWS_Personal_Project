@@ -326,9 +326,7 @@ Resources:
             echo "${RootPassword}"
             echo "${RootPassword}"
             ) | passwd --stdin root
-            sed -i "s/^PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
-            sed -i "s/^#PermitRootLogin prohibit-password/PermitRootLogin yes/g" /etc/ssh/sshd_config
-            service sshd restart
+            # SSH 접속은 키 페어만 허용 (root 패스워드 로그인 미사용)
             hostnamectl --static set-hostname Singapore-WEB1
             cat <<EOT > /etc/profile.d/prompt.sh
             export PS1="[\[\e[1;31m\]\u\[\e[m\]@\[\e[1;32m\]\h\[\e[m\]: \[\e[1;36m\]\w\[\e[m\]]#"

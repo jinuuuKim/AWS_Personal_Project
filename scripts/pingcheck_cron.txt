@@ -1,3 +1,8 @@
+# 웹서버에서 1분 주기로 같은 리전 IDC의 DB에 ping을 보내고,
+# 닿지 않으면 httpd를 내려 ALB 대상그룹에서 빠지게 한다.
+# 해당 리전이 Unhealthy가 되면 Global Accelerator가 반대 리전으로 트래픽을 보낸다.
+# DB가 돌아오면 다시 httpd를 올려 원래대로 복귀한다.
+
 ###서울###
 cat <<EOF > /root/pingcheck.sh
 #!/bin/bash
@@ -34,39 +39,3 @@ EOF
 chmod +x /root/pingcheck.sh
 echo "* * * * * /root/pingcheck.sh >> /root/db_check.log 2>&1" > /var/spool/cron/root
 chmod 600 /var/spool/cron/root
-
-
-# pingall
-dnf install -y tcpdump squid
-
-cat <<EOT> /etc/squid/squid.conf
-http_port 3128
-acl all src 0.0.0.0/0
-http_access allow all
-http_access deny all
-EOT
-
-systemctl start squid && systemctl enable squid
-
-cat <<EOT> list.txt
-10.1.3.100
-10.1.4.100
-10.2.1.100
-10.2.1.200
-10.3.3.100
-10.4.1.100
-10.4.1.200
-websrv1.awsseoul.internal
-websrv2.awsseoul.internal
-dbsrv.idcseoul.internal
-dnssrv.idcseoul.internal
-websrv1.awssingapore.internal
-dbsrv.idcsingapore.internal
-dbsrv.idcsingapore.internal
-www.mellohn.cloud
-EOT
-
-curl -o /home/ec2-user/pingall.sh https://cloudneta-book.s3.ap-northeast-2.amazonaws.com/chapter6/pingall.sh --silent
-cp /home/ec2-user/pingall.sh /root/pingall.sh
-cp /home/ec2-user/list.txt /root/list.txt
-chmod +x /home/ec2-user/pingall.sh
